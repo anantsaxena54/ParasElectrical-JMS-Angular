@@ -1,0 +1,232 @@
+<div class="job-details-container container" *ngIf="job">
+  <div class="header-section">
+    <a routerLink="/dashboard" class="back-link">← Back to Dashboard</a>
+    <div class="title-row">
+      <h2>{{job.jobId}}</h2>
+      <span class="stage-badge large">{{job.currentStage}}</span>
+    </div>
+  </div>
+
+  <div class="content-layout">
+    <!-- Information Panel (Always Visible) -->
+    <div class="info-panel glass-card">
+      <h3>Job Information</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="label">Client</span>
+          <span class="value">{{job.clientName}}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Received Date</span>
+          <span class="value">{{job.receivedDate}}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Motor Specs</span>
+          <span class="value">{{job.motorType}}, {{job.capacity}} kW, {{job.voltage}}V, {{job.weight}}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Priority</span>
+          <span class="value priority-text" [ngClass]="job.priority?.toLowerCase() || ''">{{job.priority || 'N/A'}}</span>
+        </div>
+        <div class="info-item full-width">
+          <span class="label">Problem Reported</span>
+          <span class="value">{{job.problemReported || 'None specified'}}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs Container -->
+    <div class="tabs-container glass-card">
+      <div class="tabs-header">
+        <button [class.active]="activeTab === 'workflow'" (click)="setTab('workflow')">Workflow</button>
+        <button [class.active]="activeTab === 'checklist'" (click)="setTab('checklist')">Checklist</button>
+        <button [class.active]="activeTab === 'photos'" (click)="setTab('photos')">Photos</button>
+        <button [class.active]="activeTab === 'documents'" (click)="setTab('documents')">Documents</button>
+        <button [class.active]="activeTab === 'notes'" (click)="setTab('notes')">Notes</button>
+      </div>
+
+      <div class="tabs-content">
+        <!-- Workflow Tab -->
+        <div [hidden]="activeTab !== 'workflow'" class="tab-pane workflow-pane animate-fade-in">
+          <div class="workflow-tracker">
+            <div *ngFor="let stage of stages" class="stage-item" [class.completed]="stage.number < getCurrentStageNumber()" [class.current]="stage.number === getCurrentStageNumber()">
+              <div class="stage-circle">{{stage.number}}</div>
+              <div class="stage-name">{{stage.name}}</div>
+            </div>
+          </div>
+          <div class="action-row" style="display: flex; gap: 1rem; justify-content: flex-end;">
+            <button class="btn btn-outline" style="width: auto; padding: 0.5rem 1.5rem;" (click)="moveToPreviousStage()" [disabled]="getCurrentStageNumber() <= 1">
+              Previous Stage
+            </button>
+            <button class="btn btn-primary" style="width: auto; padding: 0.5rem 1.5rem;" (click)="moveToNextStage()" [disabled]="getCurrentStageNumber() >= 10">
+              Next Stage
+            </button>
+          </div>
+        </div>
+
+        <!-- Checklist Tab (Mocked for MVP) -->
+        <div [hidden]="activeTab !== 'checklist'" class="tab-pane animate-fade-in">
+          <h3>Current Stage Checklist</h3>
+          <p class="text-muted">Checklist items for {{job.currentStage}}.</p>
+          <ul class="checklist">
+            <li><label><input type="checkbox"> Visual inspection completed</label></li>
+            <li><label><input type="checkbox"> Initial parameters logged</label></li>
+            <li><label><input type="checkbox"> Supervisor sign-off</label></li>
+          </ul>
+        </div>
+
+        <!-- Photos Tab -->
+        <div [hidden]="activeTab !== 'photos'" class="tab-pane animate-fade-in">
+          <div class="photo-buckets">
+            
+            <!-- Before Repair -->
+            <div class="bucket glass-card">
+              <h4>Before Repair</h4>
+              <div class="photo-grid mt-3">
+                <div class="photo-card" *ngFor="let p of getPhotosByBucket('Before Repair')">
+                  <img [src]="getFileUrl(p.filePath)" alt="Before Repair" class="photo-preview cursor-pointer" (click)="openPreview(p.filePath)">
+                  <div class="photo-actions">
+                    <span class="photo-name" [title]="p.originalFilename || p.filePath">{{p.originalFilename || p.filePath}}</span>
+                    <div style="display: flex; gap: 0.25rem;">
+                      <a [href]="getDownloadUrl(p.filePath)" class="btn btn-sm btn-primary action-btn" download title="Download">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                      </a>
+                      <button class="btn btn-sm btn-danger action-btn" (click)="deletePhoto(p.id)" title="Delete">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <input type="file" multiple #fileBefore style="display:none" (change)="onPhotoSelected($event, 'Before Repair')">
+              <button class="btn btn-outline btn-sm mt-3 w-full" (click)="fileBefore.click()">+ Add Photos</button>
+            </div>
+            
+            <!-- During Work -->
+            <div class="bucket glass-card">
+              <h4>During Work</h4>
+              <div class="photo-grid mt-3">
+                <div class="photo-card" *ngFor="let p of getPhotosByBucket('During Work')">
+                  <img [src]="getFileUrl(p.filePath)" alt="During Work" class="photo-preview cursor-pointer" (click)="openPreview(p.filePath)">
+                  <div class="photo-actions">
+                    <span class="photo-name" [title]="p.originalFilename || p.filePath">{{p.originalFilename || p.filePath}}</span>
+                    <div style="display: flex; gap: 0.25rem;">
+                      <a [href]="getDownloadUrl(p.filePath)" class="btn btn-sm btn-primary action-btn" download title="Download">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                      </a>
+                      <button class="btn btn-sm btn-danger action-btn" (click)="deletePhoto(p.id)" title="Delete">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <input type="file" multiple #fileDuring style="display:none" (change)="onPhotoSelected($event, 'During Work')">
+              <button class="btn btn-outline btn-sm mt-3 w-full" (click)="fileDuring.click()">+ Add Photos</button>
+            </div>
+            
+            <!-- Final Completion -->
+            <div class="bucket glass-card">
+              <h4>Final Completion</h4>
+              <div class="photo-grid mt-3">
+                <div class="photo-card" *ngFor="let p of getPhotosByBucket('Final Completion')">
+                  <img [src]="getFileUrl(p.filePath)" alt="Final Completion" class="photo-preview cursor-pointer" (click)="openPreview(p.filePath)">
+                  <div class="photo-actions">
+                    <span class="photo-name" [title]="p.originalFilename || p.filePath">{{p.originalFilename || p.filePath}}</span>
+                    <div style="display: flex; gap: 0.25rem;">
+                      <a [href]="getDownloadUrl(p.filePath)" class="btn btn-sm btn-primary action-btn" download title="Download">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                      </a>
+                      <button class="btn btn-sm btn-danger action-btn" (click)="deletePhoto(p.id)" title="Delete">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <input type="file" multiple #fileFinal style="display:none" (change)="onPhotoSelected($event, 'Final Completion')">
+              <button class="btn btn-outline btn-sm mt-3 w-full" (click)="fileFinal.click()">+ Add Photos</button>
+            </div>
+            
+          </div>
+        </div>
+
+        <!-- Documents Tab -->
+        <div [hidden]="activeTab !== 'documents'" class="tab-pane animate-fade-in">
+          <div class="bucket glass-card w-full">
+            <h4>Job Documents</h4>
+            <div class="photo-grid mt-3">
+              <div class="photo-card" *ngFor="let d of documents">
+                <!-- We reuse the photo-preview class to show a generic image or thumbnail -->
+                <img [src]="getFileUrl(d.filePath)" alt="Document" class="photo-preview cursor-pointer" (click)="openPreview(d.filePath)">
+                <div class="photo-actions">
+                  <span class="photo-name" [title]="d.originalFilename || d.filePath">{{d.originalFilename || d.filePath}}</span>
+                  <div style="display: flex; gap: 0.25rem;">
+                    <a [href]="getDownloadUrl(d.filePath)" class="btn btn-sm btn-primary action-btn" download title="Download">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                    </a>
+                    <button class="btn btn-sm btn-danger action-btn" (click)="deleteDocument(d.id)" title="Delete">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div *ngIf="documents.length === 0" class="text-muted mb-4 mt-2">No documents uploaded yet.</div>
+            
+            <input type="file" multiple #fileDoc style="display:none" (change)="onDocumentSelected($event)">
+            <button class="btn btn-primary mt-2" style="width: auto" (click)="fileDoc.click()">+ Upload Document</button>
+          </div>
+        </div>
+
+        <!-- Notes Tab -->
+        <div [hidden]="activeTab !== 'notes'" class="tab-pane animate-fade-in">
+          <div class="notes-input mb-4">
+            <textarea #newNoteInput class="form-control w-full" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 0.5rem; border-radius: 4px;" rows="3" placeholder="Type a new note here..."></textarea>
+            <button class="btn btn-primary mt-2" style="width: auto;" (click)="addNote(newNoteInput.value); newNoteInput.value=''">Add Note</button>
+          </div>
+          
+          <div class="notes-list mt-4">
+            <div *ngIf="notes.length === 0" class="text-muted">No notes added yet.</div>
+            
+            <div class="note-card glass-card mb-3" style="padding: 1rem; border-radius: 8px; background: rgba(0,0,0,0.2);" *ngFor="let n of notes">
+              <div class="note-header" style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+                <span class="text-sm text-muted">{{n.author}} • {{n.timestamp | date:'short'}}</span>
+                <div class="note-actions" style="display: flex; gap: 0.5rem;">
+                  <button class="btn btn-sm btn-outline action-btn" style="padding: 0.2rem 0.5rem; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: white; border-radius: 4px; cursor: pointer;" (click)="startEditNote(n)" *ngIf="editingNoteId !== n.id" title="Edit">✏️</button>
+                  <button class="btn btn-sm btn-danger action-btn" (click)="deleteNote(n.id)" *ngIf="editingNoteId !== n.id" title="Delete">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="note-content" style="white-space: pre-wrap;" *ngIf="editingNoteId !== n.id">
+                {{n.content}}
+              </div>
+              
+              <div class="note-edit-box mt-2" *ngIf="editingNoteId === n.id">
+                <textarea #editNoteInput class="form-control w-full" style="background: rgba(255,255,255,0.05); border: 1px solid var(--primary); color: white; padding: 0.5rem; border-radius: 4px;" rows="3" [value]="n.content"></textarea>
+                <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                  <button class="btn btn-sm btn-primary" style="width: auto; padding: 0.3rem 1rem;" (click)="saveNoteEdit(n.id, editNoteInput.value)">Save</button>
+                  <button class="btn btn-sm btn-outline" style="width: auto; padding: 0.3rem 1rem; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: white;" (click)="cancelEditNote()">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container text-center py-5" *ngIf="!job">
+  Loading job details...
+</div>
+
+<!-- Fullscreen Image Preview Modal -->
+<div class="photo-modal" *ngIf="selectedPhotoForPreview" (click)="closePreview()">
+  <span class="close-modal">&times;</span>
+  <img [src]="selectedPhotoForPreview" class="modal-content" (click)="$event.stopPropagation()">
+</div>

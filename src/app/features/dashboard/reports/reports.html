@@ -1,0 +1,52 @@
+<div class="reports-container container">
+  <div class="header-section">
+    <h2>Insights & Analytics</h2>
+    <button class="btn btn-outline" (click)="exportData()">
+      <span class="icon">↓</span> Export Jobs CSV
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="text-center py-5">
+    Loading metrics...
+  </div>
+
+  <div *ngIf="!loading && metrics" class="metrics-content animate-fade-in">
+    
+    <!-- Top Level Metrics -->
+    <div class="stats-grid">
+      <div class="stat-card glass-card highlight-primary">
+        <div class="stat-title">Average Cycle Time</div>
+        <div class="stat-value">{{metrics.averageCycleTimeDays}} <span class="unit">Days</span></div>
+        <div class="stat-desc">From Received to Dispatched</div>
+      </div>
+      
+      <div class="stat-card glass-card highlight-success">
+        <div class="stat-title">On-Time Delivery</div>
+        <div class="stat-value">{{metrics.onTimeDeliveryPercentage}}%</div>
+        <div class="stat-desc">Jobs meeting expected delivery dates</div>
+      </div>
+    </div>
+
+    <!-- Workload Analysis -->
+    <div class="workload-section glass-card mt-4">
+      <h3>Technician Workload</h3>
+      <p class="text-muted mb-4">Active jobs currently assigned per team member.</p>
+      
+      <div class="workload-grid" *ngIf="metrics.technicianWorkload">
+        <div class="workload-item" *ngFor="let item of metrics.technicianWorkload | keyvalue">
+          <div class="tech-name">{{item.key}}</div>
+          <div class="tech-count">{{item.value}} Active Jobs</div>
+          <div class="progress-bar">
+            <!-- Simple visual indicator, hardcoded max of 10 for demo -->
+            <div class="progress-fill" [style.width]="(+item.value / 10 * 100) + '%'"></div>
+          </div>
+        </div>
+        
+        <div *ngIf="(metrics.technicianWorkload | keyvalue)?.length === 0" class="text-muted">
+          No active assignments found.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

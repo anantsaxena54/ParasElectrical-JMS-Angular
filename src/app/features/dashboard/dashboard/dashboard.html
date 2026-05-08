@@ -1,0 +1,78 @@
+<div class="dashboard-container container">
+  <div class="header-section">
+    <h2>Operations Dashboard</h2>
+    <a routerLink="/jobs/create" class="btn btn-primary">+ Create New Job</a>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="stats-grid">
+    <div class="stat-card glass-card" style="cursor: pointer; transition: all 0.2s ease;" (click)="filterByGroup('ALL')" [ngStyle]="{'border': statusFilter === 'ALL' ? '1px solid var(--primary)' : '', 'box-shadow': statusFilter === 'ALL' ? '0 0 10px rgba(99, 102, 241, 0.3)' : ''}">
+      <div class="stat-title">Total Jobs</div>
+      <div class="stat-value">{{totalJobs}}</div>
+    </div>
+    <div class="stat-card glass-card" style="cursor: pointer; transition: all 0.2s ease;" (click)="filterByGroup('IN_PROGRESS_GROUP')" [ngStyle]="{'border': statusFilter === 'IN_PROGRESS_GROUP' ? '1px solid var(--primary)' : '', 'box-shadow': statusFilter === 'IN_PROGRESS_GROUP' ? '0 0 10px rgba(99, 102, 241, 0.3)' : ''}">
+      <div class="stat-title">In Progress</div>
+      <div class="stat-value">{{inProgress}}</div>
+    </div>
+    <div class="stat-card glass-card" style="cursor: pointer; transition: all 0.2s ease;" (click)="filterByGroup('TESTING')" [ngStyle]="{'border': statusFilter === 'TESTING' ? '1px solid var(--primary)' : '', 'box-shadow': statusFilter === 'TESTING' ? '0 0 10px rgba(99, 102, 241, 0.3)' : ''}">
+      <div class="stat-title">Testing</div>
+      <div class="stat-value">{{testing}}</div>
+    </div>
+    <div class="stat-card glass-card" style="cursor: pointer; transition: all 0.2s ease;" (click)="filterByGroup('READY_FOR_DISPATCH')" [ngStyle]="{'border': statusFilter === 'READY_FOR_DISPATCH' ? '1px solid var(--primary)' : '', 'box-shadow': statusFilter === 'READY_FOR_DISPATCH' ? '0 0 10px rgba(99, 102, 241, 0.3)' : ''}">
+      <div class="stat-title">Ready for Dispatch</div>
+      <div class="stat-value">{{readyForDispatch}}</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-section glass-card">
+    <div class="search-box">
+      <input type="text" [(ngModel)]="searchTerm" (input)="applyFilters()" placeholder="Search by Job ID or Client...">
+    </div>
+    <div class="filter-dropdown">
+      <select [(ngModel)]="statusFilter" (change)="applyFilters()">
+        <option value="ALL">All Stages</option>
+        <option value="RECEIVED">Received</option>
+        <option value="INSPECTION">Inspection</option>
+        <option value="REWINDING">Rewinding</option>
+        <option value="TESTING">Testing</option>
+        <option value="READY_FOR_DISPATCH">Ready for Dispatch</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Job Table -->
+  <div class="table-container glass-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Job ID</th>
+          <th>Client Name</th>
+          <th>Motor Details</th>
+          <th>Current Stage</th>
+          <th>Priority</th>
+          <th>Due Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let job of filteredJobs">
+          <td class="font-bold text-primary">{{job.jobId}}</td>
+          <td>{{job.clientName}}</td>
+          <td>{{job.capacity}} kW, {{job.voltage}}V</td>
+          <td><span class="stage-badge">{{job.currentStage}}</span></td>
+          <td>
+            <span class="priority-badge" [ngClass]="job.priority?.toLowerCase() || ''">{{job.priority || 'N/A'}}</span>
+          </td>
+          <td>{{job.expectedDeliveryDate || 'N/A'}}</td>
+          <td>
+            <a [routerLink]="['/jobs', job.id]" class="btn btn-outline btn-sm">View Details</a>
+          </td>
+        </tr>
+        <tr *ngIf="filteredJobs.length === 0">
+          <td colspan="7" class="text-center py-4">No jobs found matching your criteria.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

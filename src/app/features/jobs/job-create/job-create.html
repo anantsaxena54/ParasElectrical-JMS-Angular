@@ -1,0 +1,82 @@
+<div class="job-create-container container">
+  <div class="header-section">
+    <a routerLink="/dashboard" class="back-link">← Back to Dashboard</a>
+    <h2>Create New Job Intake</h2>
+  </div>
+
+  <div class="form-card glass-card">
+    <form [formGroup]="jobForm" (ngSubmit)="onSubmit()" class="job-form">
+      
+      <div class="form-section">
+        <h3>Client Information</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Client Name *</label>
+            <input type="text" formControlName="clientName" class="form-control" placeholder="Enter client name">
+          </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="text" formControlName="phoneNumber" class="form-control" placeholder="Enter phone number">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Motor Specifications</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Motor Type *</label>
+            <select formControlName="motorType" class="form-control">
+              <option value="AC">AC</option>
+              <option value="DC">DC</option>
+              <option value="HT">HT</option>
+              <option value="LT">LT</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Capacity (kW/MW) *</label>
+            <input type="text" formControlName="capacity" class="form-control" placeholder="e.g. 500 kW">
+          </div>
+          <div class="form-group">
+            <label>Voltage</label>
+            <input type="text" formControlName="voltage" class="form-control" placeholder="e.g. 415 V">
+          </div>
+          <div class="form-group">
+            <label>Weight</label>
+            <input type="text" formControlName="weight" class="form-control" placeholder="e.g. 1.2 Tons">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Job Details</h3>
+        <div class="form-group full-width">
+          <label>Problem Reported</label>
+          <textarea formControlName="problemReported" class="form-control" rows="4" placeholder="Describe the issue..."></textarea>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Priority *</label>
+            <select formControlName="priority" class="form-control">
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Expected Delivery Date</label>
+            <input type="date" formControlName="expectedDeliveryDate" class="form-control">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" routerLink="/dashboard" class="btn btn-outline">Cancel</button>
+        <button type="submit" class="btn btn-primary" [disabled]="!jobForm.valid || isSubmitting">
+          {{ isSubmitting ? 'Creating...' : 'Create Job' }}
+        </button>
+      </div>
+      
+    </form>
+  </div>
+</div>

@@ -1,0 +1,17 @@
+<!-- Main Layout -->
+<nav class="navbar glass-card" *ngIf="router.url !== '/login'">
+  <div class="container navbar-content">
+    <div class="logo">
+      <span class="logo-text">JMS</span>
+      <span class="logo-dot">.</span>
+    </div>
+    <ul class="nav-links">
+      <li><a routerLink="/dashboard">Dashboard</a></li>
+      <li><a routerLink="/reports">Reports</a></li>
+      <li><a routerLink="/technician">Technician View</a></li>
+      <li><a (click)="logout()" style="cursor: pointer;" class="btn btn-outline">Logout</a></li>
+    </ul>
+  </div>
+</nav>
+
+<router-outlet></router-outlet>

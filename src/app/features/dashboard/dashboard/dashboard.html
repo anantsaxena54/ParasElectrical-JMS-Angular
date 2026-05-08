@@ -1,7 +1,11 @@
 <div class="dashboard-container container">
   <div class="header-section">
     <h2>Operations Dashboard</h2>
-    <a routerLink="/jobs/create" class="btn btn-primary">+ Create New Job</a>
+    <div style="display: flex; gap: 1rem;">
+      <a routerLink="/reports" [queryParams]="{tab: 'master'}" class="btn btn-outline">View Master Sheet</a>
+      <a href="http://localhost:8080/api/jobs/master-sheet" class="btn btn-outline" target="_blank">Download Master Sheet</a>
+      <a routerLink="/jobs/create" class="btn btn-primary">+ Create New Job</a>
+    </div>
   </div>
 
   <!-- Summary Cards -->
@@ -59,7 +63,7 @@
         <tr *ngFor="let job of filteredJobs">
           <td class="font-bold text-primary">{{job.jobId}}</td>
           <td>{{job.clientName}}</td>
-          <td>{{job.capacity}} kW, {{job.voltage}}V</td>
+          <td>{{job.capacity}} / {{job.pole || 'N/A'}} / {{job.voltage}} / {{job.motorType}}</td>
           <td><span class="stage-badge">{{job.currentStage}}</span></td>
           <td>
             <span class="priority-badge" [ngClass]="job.priority?.toLowerCase() || ''">{{job.priority || 'N/A'}}</span>

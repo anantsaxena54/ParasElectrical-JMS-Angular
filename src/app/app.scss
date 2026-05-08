@@ -16,6 +16,15 @@
   }
   
   .logo {
+    display: flex;
+    align-items: center;
+    
+    .navbar-logo {
+      height: 45px; // Larger height for better visibility
+      width: auto;
+      object-fit: contain;
+    }
+    
     font-size: 1.5rem;
     font-family: var(--font-display);
     font-weight: 700;

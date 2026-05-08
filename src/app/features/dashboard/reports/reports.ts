@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, KeyValuePipe } from '@angular/common';
-import { Report } from '../../../core/services/report';
+import { ChangeDetectorRef } from '@angular/core';
+import { Job } from '../../../core/services/job';
 
 @Component({
   selector: 'app-reports',
@@ -10,25 +11,37 @@ import { Report } from '../../../core/services/report';
   styleUrls: ['./reports.scss']
 })
 export class Reports implements OnInit {
-  metrics: any = null;
+  jobs: any[] = [];
   loading = true;
 
-  constructor(private reportService: Report) {}
+  constructor(
+    private jobService: Job,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
-    this.reportService.getDashboardMetrics().subscribe({
+    this.loadData();
+  }
+
+  loadData() {
+    this.loading = true;
+    
+    // Load all jobs for master view
+    this.jobService.getAllJobs().subscribe({
       next: (data) => {
-        this.metrics = data;
+        this.jobs = data;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Failed to load metrics', err);
+        console.error('Failed to load jobs', err);
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
 
   exportData() {
-    this.reportService.exportJobsCsv();
+    window.open('http://localhost:8080/api/jobs/master-sheet', '_blank');
   }
 }

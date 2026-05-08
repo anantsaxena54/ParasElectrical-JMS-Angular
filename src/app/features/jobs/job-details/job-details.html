@@ -13,20 +13,52 @@
       <h3>Job Information</h3>
       <div class="info-grid">
         <div class="info-item">
+          <span class="label">Job ID</span>
+          <span class="value">{{job.jobId}}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Date</span>
+          <span class="value">{{job.receivedDate | date:'mediumDate'}}</span>
+        </div>
+        <div class="info-item">
           <span class="label">Client</span>
           <span class="value">{{job.clientName}}</span>
         </div>
         <div class="info-item">
-          <span class="label">Received Date</span>
-          <span class="value">{{job.receivedDate}}</span>
+          <span class="label">Contact Person</span>
+          <span class="value">{{job.contactPerson || 'N/A'}}</span>
         </div>
         <div class="info-item">
-          <span class="label">Motor Specs</span>
-          <span class="value">{{job.motorType}}, {{job.capacity}} kW, {{job.voltage}}V, {{job.weight}}</span>
+          <span class="label">Phone</span>
+          <span class="value">{{job.phoneNumber || 'N/A'}}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Motor Type</span>
+          <span class="value">{{job.motorType}}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Capacity</span>
+          <span class="value">{{job.capacity}}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Voltage</span>
+          <span class="value">{{job.voltage}}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Poles</span>
+          <span class="value">{{job.pole || 'N/A'}}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Weight</span>
+          <span class="value">{{job.weight}}</span>
         </div>
         <div class="info-item">
           <span class="label">Priority</span>
           <span class="value priority-text" [ngClass]="job.priority?.toLowerCase() || ''">{{job.priority || 'N/A'}}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Expected Delivery</span>
+          <span class="value">{{job.expectedDeliveryDate ? (job.expectedDeliveryDate | date:'mediumDate') : 'N/A'}}</span>
         </div>
         <div class="info-item full-width">
           <span class="label">Problem Reported</span>
@@ -39,7 +71,7 @@
     <div class="tabs-container glass-card">
       <div class="tabs-header">
         <button [class.active]="activeTab === 'workflow'" (click)="setTab('workflow')">Workflow</button>
-        <button [class.active]="activeTab === 'checklist'" (click)="setTab('checklist')">Checklist</button>
+        <button *ngIf="job.currentStage === 'TESTING'" [class.active]="activeTab === 'checklist'" (click)="setTab('checklist')">Checklist</button>
         <button [class.active]="activeTab === 'photos'" (click)="setTab('photos')">Photos</button>
         <button [class.active]="activeTab === 'documents'" (click)="setTab('documents')">Documents</button>
         <button [class.active]="activeTab === 'notes'" (click)="setTab('notes')">Notes</button>
@@ -64,119 +96,163 @@
           </div>
         </div>
 
-        <!-- Checklist Tab (Mocked for MVP) -->
-        <div [hidden]="activeTab !== 'checklist'" class="tab-pane animate-fade-in">
-          <h3>Current Stage Checklist</h3>
-          <p class="text-muted">Checklist items for {{job.currentStage}}.</p>
-          <ul class="checklist">
-            <li><label><input type="checkbox"> Visual inspection completed</label></li>
-            <li><label><input type="checkbox"> Initial parameters logged</label></li>
-            <li><label><input type="checkbox"> Supervisor sign-off</label></li>
+        <!-- Checklist Tab -->
+        <div [hidden]="activeTab !== 'checklist'" class="tab-pane animate-fade-in" *ngIf="job.currentStage === 'TESTING'">
+          <h3>Test Completed</h3>
+          <p class="text-muted">Checklist items for testing phase.</p>
+          <ul class="checklist" style="list-style: none; padding-left: 0; margin-top: 1.5rem;">
+            <li style="margin-bottom: 1.2rem;" *ngFor="let item of checklistItems">
+              <label class="toggle-switch">
+                <input type="checkbox" [(ngModel)]="item.completed" (change)="onChecklistChange()">
+                <span class="slider"></span>
+                <span class="toggle-label">{{item.taskDescription}}</span>
+              </label>
+            </li>
           </ul>
         </div>
 
         <!-- Photos Tab -->
         <div [hidden]="activeTab !== 'photos'" class="tab-pane animate-fade-in">
           <div class="photo-buckets">
-            
+
             <!-- Before Repair -->
-            <div class="bucket glass-card">
-              <h4>Before Repair</h4>
-              <div class="photo-grid mt-3">
+            <div class="bucket">
+              <div class="bucket-header">
+                <h4>Before Repair</h4>
+                <div class="header-actions">
+                  <button class="btn btn-danger btn-sm" (click)="deleteAllPhotos('Before Repair')" *ngIf="getPhotosByBucket('Before Repair').length > 0" title="Delete all photos in this bucket">Delete All</button>
+                  <input type="file" multiple #fileBefore style="display:none" (change)="onPhotoSelected($event, 'Before Repair')">
+                  <button class="btn btn-outline btn-sm" (click)="fileBefore.click()">+ Add Photos</button>
+                </div>
+              </div>
+              <div class="photo-grid" *ngIf="getPhotosByBucket('Before Repair').length > 0; else emptyBefore">
                 <div class="photo-card" *ngFor="let p of getPhotosByBucket('Before Repair')">
                   <img [src]="getFileUrl(p.filePath)" alt="Before Repair" class="photo-preview cursor-pointer" (click)="openPreview(p.filePath)">
-                  <div class="photo-actions">
-                    <span class="photo-name" [title]="p.originalFilename || p.filePath">{{p.originalFilename || p.filePath}}</span>
-                    <div style="display: flex; gap: 0.25rem;">
+                  <div class="photo-overlay">
+                    <span class="photo-name-overlay" [title]="p.originalFilename || p.filePath">{{p.originalFilename || p.filePath}}</span>
+                    <div class="overlay-actions">
+                      <button class="btn btn-sm action-btn" style="background:rgba(255,255,255,0.15); color:white; border:none;" (click)="openPreview(p.filePath)" title="Preview">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                      </button>
                       <a [href]="getDownloadUrl(p.filePath)" class="btn btn-sm btn-primary action-btn" download title="Download">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
                       </a>
                       <button class="btn btn-sm btn-danger action-btn" (click)="deletePhoto(p.id)" title="Delete">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
                       </button>
                     </div>
                   </div>
                 </div>
               </div>
-              <input type="file" multiple #fileBefore style="display:none" (change)="onPhotoSelected($event, 'Before Repair')">
-              <button class="btn btn-outline btn-sm mt-3 w-full" (click)="fileBefore.click()">+ Add Photos</button>
+              <ng-template #emptyBefore><p class="text-muted" style="font-size:0.85rem; margin:0.5rem 0;">No photos uploaded yet.</p></ng-template>
             </div>
-            
+
             <!-- During Work -->
-            <div class="bucket glass-card">
-              <h4>During Work</h4>
-              <div class="photo-grid mt-3">
+            <div class="bucket">
+              <div class="bucket-header">
+                <h4>During Work</h4>
+                <div class="header-actions">
+                  <button class="btn btn-danger btn-sm" (click)="deleteAllPhotos('During Work')" *ngIf="getPhotosByBucket('During Work').length > 0" title="Delete all photos in this bucket">Delete All</button>
+                  <input type="file" multiple #fileDuring style="display:none" (change)="onPhotoSelected($event, 'During Work')">
+                  <button class="btn btn-outline btn-sm" (click)="fileDuring.click()">+ Add Photos</button>
+                </div>
+              </div>
+              <div class="photo-grid" *ngIf="getPhotosByBucket('During Work').length > 0; else emptyDuring">
                 <div class="photo-card" *ngFor="let p of getPhotosByBucket('During Work')">
                   <img [src]="getFileUrl(p.filePath)" alt="During Work" class="photo-preview cursor-pointer" (click)="openPreview(p.filePath)">
-                  <div class="photo-actions">
-                    <span class="photo-name" [title]="p.originalFilename || p.filePath">{{p.originalFilename || p.filePath}}</span>
-                    <div style="display: flex; gap: 0.25rem;">
+                  <div class="photo-overlay">
+                    <span class="photo-name-overlay" [title]="p.originalFilename || p.filePath">{{p.originalFilename || p.filePath}}</span>
+                    <div class="overlay-actions">
+                      <button class="btn btn-sm action-btn" style="background:rgba(255,255,255,0.15); color:white; border:none;" (click)="openPreview(p.filePath)" title="Preview">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                      </button>
                       <a [href]="getDownloadUrl(p.filePath)" class="btn btn-sm btn-primary action-btn" download title="Download">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
                       </a>
                       <button class="btn btn-sm btn-danger action-btn" (click)="deletePhoto(p.id)" title="Delete">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
                       </button>
                     </div>
                   </div>
                 </div>
               </div>
-              <input type="file" multiple #fileDuring style="display:none" (change)="onPhotoSelected($event, 'During Work')">
-              <button class="btn btn-outline btn-sm mt-3 w-full" (click)="fileDuring.click()">+ Add Photos</button>
+              <ng-template #emptyDuring><p class="text-muted" style="font-size:0.85rem; margin:0.5rem 0;">No photos uploaded yet.</p></ng-template>
             </div>
-            
+
             <!-- Final Completion -->
-            <div class="bucket glass-card">
-              <h4>Final Completion</h4>
-              <div class="photo-grid mt-3">
+            <div class="bucket">
+              <div class="bucket-header">
+                <h4>Final Completion</h4>
+                <div class="header-actions">
+                  <button class="btn btn-danger btn-sm" (click)="deleteAllPhotos('Final Completion')" *ngIf="getPhotosByBucket('Final Completion').length > 0" title="Delete all photos in this bucket">Delete All</button>
+                  <input type="file" multiple #fileFinal style="display:none" (change)="onPhotoSelected($event, 'Final Completion')">
+                  <button class="btn btn-outline btn-sm" (click)="fileFinal.click()">+ Add Photos</button>
+                </div>
+              </div>
+              <div class="photo-grid" *ngIf="getPhotosByBucket('Final Completion').length > 0; else emptyFinal">
                 <div class="photo-card" *ngFor="let p of getPhotosByBucket('Final Completion')">
                   <img [src]="getFileUrl(p.filePath)" alt="Final Completion" class="photo-preview cursor-pointer" (click)="openPreview(p.filePath)">
-                  <div class="photo-actions">
-                    <span class="photo-name" [title]="p.originalFilename || p.filePath">{{p.originalFilename || p.filePath}}</span>
-                    <div style="display: flex; gap: 0.25rem;">
+                  <div class="photo-overlay">
+                    <span class="photo-name-overlay" [title]="p.originalFilename || p.filePath">{{p.originalFilename || p.filePath}}</span>
+                    <div class="overlay-actions">
+                      <button class="btn btn-sm action-btn" style="background:rgba(255,255,255,0.15); color:white; border:none;" (click)="openPreview(p.filePath)" title="Preview">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                      </button>
                       <a [href]="getDownloadUrl(p.filePath)" class="btn btn-sm btn-primary action-btn" download title="Download">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
                       </a>
                       <button class="btn btn-sm btn-danger action-btn" (click)="deletePhoto(p.id)" title="Delete">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
                       </button>
                     </div>
                   </div>
                 </div>
               </div>
-              <input type="file" multiple #fileFinal style="display:none" (change)="onPhotoSelected($event, 'Final Completion')">
-              <button class="btn btn-outline btn-sm mt-3 w-full" (click)="fileFinal.click()">+ Add Photos</button>
+              <ng-template #emptyFinal><p class="text-muted" style="font-size:0.85rem; margin:0.5rem 0;">No photos uploaded yet.</p></ng-template>
             </div>
-            
+
           </div>
         </div>
 
+
         <!-- Documents Tab -->
         <div [hidden]="activeTab !== 'documents'" class="tab-pane animate-fade-in">
-          <div class="bucket glass-card w-full">
-            <h4>Job Documents</h4>
-            <div class="photo-grid mt-3">
-              <div class="photo-card" *ngFor="let d of documents">
-                <!-- We reuse the photo-preview class to show a generic image or thumbnail -->
-                <img [src]="getFileUrl(d.filePath)" alt="Document" class="photo-preview cursor-pointer" (click)="openPreview(d.filePath)">
-                <div class="photo-actions">
-                  <span class="photo-name" [title]="d.originalFilename || d.filePath">{{d.originalFilename || d.filePath}}</span>
-                  <div style="display: flex; gap: 0.25rem;">
+          <div class="bucket">
+            <div class="bucket-header">
+              <h4>Job Documents</h4>
+              <div class="header-actions">
+                <button class="btn btn-danger btn-sm" (click)="deleteAllDocuments()" *ngIf="documents.length > 0" title="Delete all documents">Delete All</button>
+                <input type="file" multiple #fileDoc style="display:none" (change)="onDocumentSelected($event)">
+                <button class="btn btn-outline btn-sm" (click)="fileDoc.click()">+ Upload Document</button>
+              </div>
+            </div>
+
+            <div class="doc-grid" *ngIf="documents.length > 0; else emptyDocs">
+              <div class="doc-card" *ngFor="let d of documents">
+                <div class="doc-icon-area">
+                  <span class="doc-ext">{{getFileExtension(d.originalFilename || d.filePath)}}</span>
+                </div>
+                <div class="doc-name" [title]="d.originalFilename || d.filePath">
+                  {{d.originalFilename || d.filePath}}
+                </div>
+                <div class="doc-overlay">
+                  <div class="overlay-actions">
+                    <button class="btn btn-sm action-btn" style="background:rgba(255,255,255,0.15); color:white; border:none;" (click)="openDocumentPreview(d.filePath)" title="Preview">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
                     <a [href]="getDownloadUrl(d.filePath)" class="btn btn-sm btn-primary action-btn" download title="Download">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
                     </a>
                     <button class="btn btn-sm btn-danger action-btn" (click)="deleteDocument(d.id)" title="Delete">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
                     </button>
                   </div>
                 </div>
               </div>
             </div>
-            
-            <div *ngIf="documents.length === 0" class="text-muted mb-4 mt-2">No documents uploaded yet.</div>
-            
-            <input type="file" multiple #fileDoc style="display:none" (change)="onDocumentSelected($event)">
-            <button class="btn btn-primary mt-2" style="width: auto" (click)="fileDoc.click()">+ Upload Document</button>
+            <ng-template #emptyDocs>
+              <p class="text-muted" style="font-size:0.85rem; margin:0.5rem 0;">No documents uploaded yet.</p>
+            </ng-template>
           </div>
         </div>
 

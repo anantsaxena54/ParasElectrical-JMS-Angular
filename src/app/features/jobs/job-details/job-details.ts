@@ -50,6 +50,49 @@ export class JobDetails implements OnInit {
   documents: any[] = [];
   notes: any[] = [];
   editingNoteId: number | null = null;
+  checklistItems: any[] = [];
+  defaultTestingItems = [
+    'Insulation Resistance (IR) Test',
+    'High Voltage (HV) Test',
+    'Surge Test',
+    'No Load Trial Test',
+    'Vibration Testing'
+  ];
+
+  loadChecklist() {
+    if (this.job && this.job.currentStage === 'TESTING') {
+      this.jobService.getChecklist(this.jobId, 'TESTING').subscribe({
+        next: (data) => {
+          if (data && data.length > 0) {
+            this.checklistItems = data;
+          } else {
+            this.checklistItems = this.defaultTestingItems.map(desc => ({
+              taskDescription: desc,
+              completed: false,
+              stage: 'TESTING'
+            }));
+            this.saveChecklist(); // Save initial defaults
+          }
+          this.cdr.detectChanges();
+        },
+        error: (err) => console.error('Error loading checklist', err)
+      });
+    }
+  }
+
+  saveChecklist() {
+    this.jobService.updateChecklist(this.jobId, 'TESTING', this.checklistItems).subscribe({
+      next: (data) => {
+        this.checklistItems = data;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error saving checklist', err)
+    });
+  }
+
+  onChecklistChange() {
+    this.saveChecklist();
+  }
 
   loadPhotos() {
     this.jobService.getPhotos(this.jobId).subscribe({
@@ -159,7 +202,7 @@ export class JobDetails implements OnInit {
       for (let i = 0; i < files.length; i++) {
         this.jobService.uploadPhoto(this.jobId, files[i], bucketType).subscribe({
           next: (photo) => {
-            this.photos.push(photo);
+            this.photos = [...this.photos, photo];
             this.cdr.detectChanges();
           },
           error: (err) => console.error('Error uploading photo', err)
@@ -180,13 +223,34 @@ export class JobDetails implements OnInit {
     }
   }
 
+  deleteAllPhotos(bucketType: string) {
+    const bucket = this.getPhotosByBucket(bucketType);
+    if (bucket.length === 0) return;
+    if (!confirm(`Delete all ${bucket.length} photo(s) from "${bucketType}"?`)) return;
+
+    const deleteRequests = bucket.map(p => this.jobService.deletePhoto(p.id));
+    let completed = 0;
+    deleteRequests.forEach(req => {
+      req.subscribe({
+        next: () => {
+          completed++;
+          if (completed === deleteRequests.length) {
+            this.photos = this.photos.filter(p => p.bucketType !== bucketType);
+            this.cdr.detectChanges();
+          }
+        },
+        error: (err) => console.error('Error deleting photo', err)
+      });
+    });
+  }
+
   onDocumentSelected(event: any) {
     const files = event.target.files;
     if (files && files.length > 0) {
       for (let i = 0; i < files.length; i++) {
         this.jobService.uploadDocument(this.jobId, files[i], 'General').subscribe({
           next: (doc) => {
-            this.documents.push(doc);
+            this.documents = [...this.documents, doc];
             this.cdr.detectChanges();
           },
           error: (err) => console.error('Error uploading document', err)
@@ -207,10 +271,38 @@ export class JobDetails implements OnInit {
     }
   }
 
+  deleteAllDocuments() {
+    if (this.documents.length === 0) return;
+    if (!confirm(`Delete all ${this.documents.length} document(s)?`)) return;
+    const deleteRequests = this.documents.map(d => this.jobService.deleteDocument(d.id));
+    let completed = 0;
+    deleteRequests.forEach(req => {
+      req.subscribe({
+        next: () => {
+          completed++;
+          if (completed === deleteRequests.length) {
+            this.documents = [];
+            this.cdr.detectChanges();
+          }
+        },
+        error: (err) => console.error('Error deleting document', err)
+      });
+    });
+  }
+
+  getFileExtension(filename: string): string {
+    return filename?.split('.').pop()?.toUpperCase() || 'FILE';
+  }
+
+  openDocumentPreview(filePath: string) {
+    window.open(this.getFileUrl(filePath), '_blank');
+  }
+
   loadJobDetails() {
     this.jobService.getJobById(this.jobId).subscribe({
       next: (data) => {
         this.job = data;
+        this.loadChecklist();
         this.cdr.detectChanges(); // Force view update
       },
       error: (err) => console.error('Error loading job details', err)
@@ -236,6 +328,12 @@ export class JobDetails implements OnInit {
         this.jobService.updateStage(this.jobId, nextStage.id).subscribe({
           next: (res) => {
             this.job = res;
+            if (this.activeTab === 'checklist' && this.job.currentStage !== 'TESTING') {
+              this.activeTab = 'workflow';
+            }
+            if (this.job.currentStage === 'TESTING') {
+              this.loadChecklist();
+            }
             this.cdr.detectChanges(); // Force UI to update with new stage
           },
           error: (err) => console.error('Error updating stage', err)
@@ -252,6 +350,12 @@ export class JobDetails implements OnInit {
         this.jobService.updateStage(this.jobId, prevStage.id).subscribe({
           next: (res) => {
             this.job = res;
+            if (this.activeTab === 'checklist' && this.job.currentStage !== 'TESTING') {
+              this.activeTab = 'workflow';
+            }
+            if (this.job.currentStage === 'TESTING') {
+              this.loadChecklist();
+            }
             this.cdr.detectChanges();
           },
           error: (err) => console.error('Error updating stage', err)

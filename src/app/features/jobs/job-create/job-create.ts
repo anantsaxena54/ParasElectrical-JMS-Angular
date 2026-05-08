@@ -19,7 +19,9 @@ export class JobCreate {
     this.jobForm = this.fb.group({
       clientName: ['', Validators.required],
       phoneNumber: [''],
-      motorType: ['AC', Validators.required],
+      contactPerson: [''],
+      motorType: ['', Validators.required],
+      pole: [''],
       capacity: ['', Validators.required],
       voltage: [''],
       weight: [''],

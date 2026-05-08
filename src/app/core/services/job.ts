@@ -72,4 +72,13 @@ export class Job {
   deleteNote(noteId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/notes/${noteId}`);
   }
+
+  // --- Checklist APIs ---
+  getChecklist(jobId: number, stage: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/${jobId}/checklist?stage=${stage}`);
+  }
+
+  updateChecklist(jobId: number, stage: string, items: any[]): Observable<any[]> {
+    return this.http.put<any[]>(`${this.apiUrl}/${jobId}/checklist?stage=${stage}`, items);
+  }
 }

@@ -6,7 +6,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class Auth {
-  private apiUrl = 'http://localhost:8080/api/auth';
+  private baseUrl = 'https://paraselectrical-jms-springboot-production.up.railway.app';
+  private apiUrl = `${this.baseUrl}/api/auth`;
 
   constructor(private http: HttpClient) { }
 

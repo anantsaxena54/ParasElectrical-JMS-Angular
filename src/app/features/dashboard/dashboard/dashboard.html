@@ -6,19 +6,19 @@
 
   <!-- Summary Cards -->
   <div class="stats-grid">
-    <div class="stat-card glass-card" style="cursor: pointer; transition: all 0.2s ease;" (click)="filterByGroup('ALL')" [ngStyle]="{'border': statusFilter === 'ALL' ? '1px solid var(--primary)' : '', 'box-shadow': statusFilter === 'ALL' ? '0 0 10px rgba(99, 102, 241, 0.3)' : ''}">
+    <div class="stat-card glass-card" style="cursor: pointer; transition: all 0.2s ease;" (click)="filterByGroup('ALL')" [ngStyle]="{'border': statusFilter === 'ALL' ? '1px solid var(--primary)' : '', 'box-shadow': statusFilter === 'ALL' ? '0 0 10px rgba(200, 55, 19, 0.3)' : ''}">
       <div class="stat-title">Total Jobs</div>
       <div class="stat-value">{{totalJobs}}</div>
     </div>
-    <div class="stat-card glass-card" style="cursor: pointer; transition: all 0.2s ease;" (click)="filterByGroup('IN_PROGRESS_GROUP')" [ngStyle]="{'border': statusFilter === 'IN_PROGRESS_GROUP' ? '1px solid var(--primary)' : '', 'box-shadow': statusFilter === 'IN_PROGRESS_GROUP' ? '0 0 10px rgba(99, 102, 241, 0.3)' : ''}">
+    <div class="stat-card glass-card" style="cursor: pointer; transition: all 0.2s ease;" (click)="filterByGroup('IN_PROGRESS_GROUP')" [ngStyle]="{'border': statusFilter === 'IN_PROGRESS_GROUP' ? '1px solid var(--primary)' : '', 'box-shadow': statusFilter === 'IN_PROGRESS_GROUP' ? '0 0 10px rgba(200, 55, 19, 0.3)' : ''}">
       <div class="stat-title">In Progress</div>
       <div class="stat-value">{{inProgress}}</div>
     </div>
-    <div class="stat-card glass-card" style="cursor: pointer; transition: all 0.2s ease;" (click)="filterByGroup('TESTING')" [ngStyle]="{'border': statusFilter === 'TESTING' ? '1px solid var(--primary)' : '', 'box-shadow': statusFilter === 'TESTING' ? '0 0 10px rgba(99, 102, 241, 0.3)' : ''}">
+    <div class="stat-card glass-card" style="cursor: pointer; transition: all 0.2s ease;" (click)="filterByGroup('TESTING')" [ngStyle]="{'border': statusFilter === 'TESTING' ? '1px solid var(--primary)' : '', 'box-shadow': statusFilter === 'TESTING' ? '0 0 10px rgba(200, 55, 19, 0.3)' : ''}">
       <div class="stat-title">Testing</div>
       <div class="stat-value">{{testing}}</div>
     </div>
-    <div class="stat-card glass-card" style="cursor: pointer; transition: all 0.2s ease;" (click)="filterByGroup('READY_FOR_DISPATCH')" [ngStyle]="{'border': statusFilter === 'READY_FOR_DISPATCH' ? '1px solid var(--primary)' : '', 'box-shadow': statusFilter === 'READY_FOR_DISPATCH' ? '0 0 10px rgba(99, 102, 241, 0.3)' : ''}">
+    <div class="stat-card glass-card" style="cursor: pointer; transition: all 0.2s ease;" (click)="filterByGroup('READY_FOR_DISPATCH')" [ngStyle]="{'border': statusFilter === 'READY_FOR_DISPATCH' ? '1px solid var(--primary)' : '', 'box-shadow': statusFilter === 'READY_FOR_DISPATCH' ? '0 0 10px rgba(200, 55, 19, 0.3)' : ''}">
       <div class="stat-title">Ready for Dispatch</div>
       <div class="stat-value">{{readyForDispatch}}</div>
     </div>

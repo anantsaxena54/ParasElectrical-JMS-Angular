@@ -17,7 +17,7 @@
   
   .logo {
     font-size: 1.5rem;
-    font-family: var(--font-heading);
+    font-family: var(--font-display);
     font-weight: 700;
     .logo-dot { color: var(--primary); }
   }
@@ -107,7 +107,7 @@
     
     .progress-bar {
       height: 8px;
-      background: var(--border);
+      background: var(--border-color);
       border-radius: 4px;
       margin-top: 1.5rem;
       overflow: hidden;
@@ -135,7 +135,7 @@
       font-size: 3rem;
       font-weight: 700;
       color: var(--primary);
-      font-family: var(--font-heading);
+      font-family: var(--font-display);
       margin-bottom: 0.5rem;
     }
     
@@ -147,7 +147,7 @@
 }
 
 .footer {
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--border-color);
   padding: 4rem 0 2rem;
   
   .footer-grid {

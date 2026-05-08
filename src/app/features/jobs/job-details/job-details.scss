@@ -88,8 +88,8 @@
   
   .tabs-header {
     display: flex;
-    border-bottom: 1px solid var(--border);
-    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid var(--border-color);
+    background: #ffffff;
     
     button {
       flex: 1;
@@ -99,18 +99,18 @@
       color: var(--text-muted);
       font-weight: 600;
       cursor: pointer;
-      transition: var(--transition);
+      transition: all 0.2s ease;
       border-bottom: 2px solid transparent;
       
       &:hover {
-        background: rgba(255, 255, 255, 0.05);
-        color: var(--text);
+        background: rgba(0, 0, 0, 0.02);
+        color: var(--text-dark);
       }
       
       &.active {
         color: var(--primary);
         border-bottom-color: var(--primary);
-        background: rgba(99, 102, 241, 0.1);
+        background: rgba(200, 55, 19, 0.05);
       }
     }
   }
@@ -138,11 +138,13 @@
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        background: var(--border);
+        background: var(--bg-color);
+        border: 1px solid var(--border-color);
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 700;
+        color: var(--text-muted);
       }
       
       .stage-name {
@@ -153,6 +155,7 @@
         opacity: 1;
         .stage-circle {
           background: #10b981;
+          border-color: #10b981;
           color: white;
         }
       }
@@ -161,8 +164,9 @@
         opacity: 1;
         .stage-circle {
           background: var(--primary);
+          border-color: var(--primary);
           color: white;
-          box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+          box-shadow: 0 0 0 4px rgba(200, 55, 19, 0.2);
         }
         .stage-name {
           color: var(--primary);
@@ -189,9 +193,9 @@
   .bucket {
     padding: 1.5rem;
     text-align: center;
-    border: 1px dashed var(--border);
+    border: 1px dashed var(--border-color);
     border-radius: 12px;
-    background: rgba(0, 0, 0, 0.2);
+    background: #ffffff;
     
     h4 {
       margin-bottom: 1rem;
@@ -210,10 +214,10 @@
 
 .photo-card {
   position: relative;
-  background: rgba(255, 255, 255, 0.05);
+  background: #ffffff;
   border-radius: 8px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
 }
@@ -230,12 +234,14 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
 }
 
 .photo-name {
   font-size: 0.7rem;
-  color: #ccc;
+  color: var(--text-dark);
+  font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -272,7 +278,6 @@
   cursor: pointer;
 }
 
-/* Fullscreen Photo Modal */
 .photo-modal {
   position: fixed;
   z-index: 1000;
@@ -280,7 +285,7 @@
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.9);
+  background-color: rgba(255, 255, 255, 0.95);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -290,14 +295,14 @@
     position: absolute;
     top: 20px;
     right: 35px;
-    color: #f1f1f1;
+    color: var(--text-dark);
     font-size: 40px;
     font-weight: bold;
     cursor: pointer;
     transition: 0.3s;
     
     &:hover, &:focus {
-      color: #bbb;
+      color: var(--primary);
       text-decoration: none;
       cursor: pointer;
     }

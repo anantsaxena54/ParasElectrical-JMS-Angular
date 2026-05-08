@@ -38,26 +38,7 @@
     font-size: 0.875rem;
   }
   
-  .form-control {
-    width: 100%;
-    padding: 0.875rem 1rem;
-    border-radius: 0.5rem;
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: var(--font-main);
-    transition: var(--transition);
-    
-    &:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-    }
-    
-    &::placeholder {
-      color: rgba(255, 255, 255, 0.3);
-    }
-  }
+
 }
 
 .btn-block {

@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule, KeyValuePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef } from '@angular/core';
 import { Job } from '../../../core/services/job';
 
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [CommonModule, KeyValuePipe],
+  imports: [CommonModule],
   templateUrl: './reports.html',
   styleUrls: ['./reports.scss']
 })

@@ -154,7 +154,6 @@
   }
 }
 
-// Workflow Tab specific styles
 .workflow-pane {
   .workflow-tracker {
     display: flex;
@@ -217,7 +216,6 @@
   }
 }
 
-// Toggle Switch for Checklist
 .toggle-switch {
   display: flex;
   align-items: center;
@@ -269,14 +267,12 @@
   }
 }
 
-// Photo Tab
 .photo-buckets {
   display: flex;
   flex-direction: column;
   gap: 0;
 }
 
-// Shared bucket container (used in both Photos and Documents tabs)
 .bucket {
   padding: 1.25rem;
   border: 1px solid var(--border-color);
@@ -315,7 +311,6 @@
 }
 
 
-/* Photo Gallery Styles */
 .photo-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
@@ -348,7 +343,6 @@
   }
 }
 
-/* Hover overlay with actions */
 .photo-overlay {
   position: absolute;
   inset: 0;
@@ -378,7 +372,6 @@
   }
 }
 
-/* Keep old photo-actions hidden; overlay replaces it */
 .photo-actions {
   display: none;
 }
@@ -408,7 +401,6 @@
   }
 }
 
-// Ensure header buttons are consistent
 .header-actions .btn {
   height: 34px;
   margin: 0;
@@ -432,7 +424,6 @@
   cursor: pointer;
 }
 
-// Document Card Grid
 .doc-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));

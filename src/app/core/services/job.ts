@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class Job {
-  private baseUrl = 'http://localhost:8080';
+  private baseUrl = 'https://paraselectrical-jms-springboot-production.up.railway.app';
   private apiUrl = `${this.baseUrl}/api/jobs`;
 
   constructor(private http: HttpClient) { }

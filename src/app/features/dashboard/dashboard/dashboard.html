@@ -3,7 +3,7 @@
     <h2>Operations Dashboard</h2>
     <div style="display: flex; gap: 1rem;">
       <a routerLink="/reports" [queryParams]="{tab: 'master'}" class="btn btn-outline">View Master Sheet</a>
-      <a href="http://localhost:8080/api/jobs/master-sheet" class="btn btn-outline" target="_blank">Download Master Sheet</a>
+      <button (click)="downloadMasterSheet()" class="btn btn-outline">Download Master Sheet</button>
       <a routerLink="/jobs/create" class="btn btn-primary">+ Create New Job</a>
     </div>
   </div>

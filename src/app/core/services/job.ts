@@ -6,7 +6,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class Job {
-  private apiUrl = 'http://localhost:8080/api/jobs';
+  private baseUrl = 'http://localhost:8080';
+  private apiUrl = `${this.baseUrl}/api/jobs`;
 
   constructor(private http: HttpClient) { }
 
@@ -30,30 +31,30 @@ export class Job {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('bucketType', bucketType);
-    return this.http.post<any>(`http://localhost:8080/api/upload/photo/${jobId}`, formData);
+    return this.http.post<any>(`${this.baseUrl}/api/upload/photo/${jobId}`, formData);
   }
 
   getPhotos(jobId: number): Observable<any[]> {
-    return this.http.get<any[]>(`http://localhost:8080/api/upload/photo/${jobId}`);
+    return this.http.get<any[]>(`${this.baseUrl}/api/upload/photo/${jobId}`);
   }
 
   deletePhoto(photoId: number): Observable<any> {
-    return this.http.delete(`http://localhost:8080/api/upload/photo/${photoId}`);
+    return this.http.delete(`${this.baseUrl}/api/upload/photo/${photoId}`);
   }
 
   uploadDocument(jobId: number, file: File, documentType: string): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('documentType', documentType);
-    return this.http.post<any>(`http://localhost:8080/api/upload/document/${jobId}`, formData);
+    return this.http.post<any>(`${this.baseUrl}/api/upload/document/${jobId}`, formData);
   }
 
   getDocuments(jobId: number): Observable<any[]> {
-    return this.http.get<any[]>(`http://localhost:8080/api/upload/document/${jobId}`);
+    return this.http.get<any[]>(`${this.baseUrl}/api/upload/document/${jobId}`);
   }
 
   deleteDocument(docId: number): Observable<any> {
-    return this.http.delete(`http://localhost:8080/api/upload/document/${docId}`);
+    return this.http.delete(`${this.baseUrl}/api/upload/document/${docId}`);
   }
 
   // --- Notes APIs ---

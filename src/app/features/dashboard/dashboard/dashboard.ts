@@ -77,4 +77,8 @@ export class Dashboard implements OnInit {
       return matchesSearch && matchesStatus;
     });
   }
+
+  downloadMasterSheet() {
+    window.open(`${(this.jobService as any).baseUrl}/api/jobs/master-sheet`, '_blank');
+  }
 }

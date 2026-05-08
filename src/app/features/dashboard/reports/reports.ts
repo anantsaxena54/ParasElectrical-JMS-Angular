@@ -42,6 +42,6 @@ export class Reports implements OnInit {
   }
 
   exportData() {
-    window.open('http://localhost:8080/api/jobs/master-sheet', '_blank');
+    window.open(`${(this.jobService as any).baseUrl}/api/jobs/master-sheet`, '_blank');
   }
 }

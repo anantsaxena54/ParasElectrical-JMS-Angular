@@ -82,4 +82,8 @@ export class Job {
   updateChecklist(jobId: number, stage: string, items: any[]): Observable<any[]> {
     return this.http.put<any[]>(`${this.apiUrl}/${jobId}/checklist?stage=${stage}`, items);
   }
+
+  deleteJob(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
 }

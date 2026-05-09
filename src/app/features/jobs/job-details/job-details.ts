@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Job } from '../../../core/services/job';
 
@@ -32,6 +32,7 @@ export class JobDetails implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private jobService: Job,
     private cdr: ChangeDetectorRef
   ) {}
@@ -361,6 +362,20 @@ export class JobDetails implements OnInit {
           error: (err) => console.error('Error updating stage', err)
         });
       }
+    }
+  }
+
+  deleteJob() {
+    if (confirm(`Are you sure you want to delete Job ${this.job.jobId}? This action cannot be undone.`)) {
+      this.jobService.deleteJob(this.jobId).subscribe({
+        next: () => {
+          this.router.navigate(['/dashboard']);
+        },
+        error: (err) => {
+          console.error('Error deleting job', err);
+          alert('Failed to delete job. Please try again.');
+        }
+      });
     }
   }
 }

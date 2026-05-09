@@ -185,6 +185,21 @@
 }
 
 @media (max-width: 768px) {
+  .navbar {
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    
+    .nav-links {
+      gap: 1rem;
+      font-size: 0.8rem;
+    }
+    
+    .logo {
+      font-size: 1.2rem;
+      .navbar-logo { height: 35px; }
+    }
+  }
+
   .hero {
     grid-template-columns: 1fr;
     text-align: center;
@@ -201,5 +216,13 @@
   .footer-grid {
     grid-template-columns: 1fr;
     gap: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    .nav-links {
+      display: none; // Simple mobile approach: hide links if too small, or could implement a burger menu
+    }
   }
 }

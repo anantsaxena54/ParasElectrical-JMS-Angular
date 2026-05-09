@@ -1,12 +1,12 @@
 <div class="job-details-container container" *ngIf="job">
   <div class="header-section">
     <a routerLink="/dashboard" class="back-link">← Back to Dashboard</a>
-    <div class="title-row" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-      <div style="display: flex; align-items: center; gap: 1rem;">
+    <div class="title-row" style="width: 100%;">
+      <div class="title-left">
         <h2>{{job.jobId}}</h2>
         <span class="stage-badge large">{{job.currentStage}}</span>
       </div>
-      <div style="display: flex; gap: 1rem;">
+      <div class="header-btns">
         <a [routerLink]="['/jobs', job.id, 'edit']" class="btn btn-outline" style="width: auto; padding: 0.5rem 1.2rem; font-size: 0.9rem;">
           Edit Job
         </a>

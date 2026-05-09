@@ -369,6 +369,7 @@ export class JobDetails implements OnInit {
     if (confirm(`Are you sure you want to delete Job ${this.job.jobId}? This action cannot be undone.`)) {
       this.jobService.deleteJob(this.jobId).subscribe({
         next: () => {
+          alert(`Job ${this.job.jobId} has been deleted successfully.`);
           this.router.navigate(['/dashboard']);
         },
         error: (err) => {

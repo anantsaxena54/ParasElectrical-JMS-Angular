@@ -178,11 +178,11 @@ export class JobDetails implements OnInit {
   }
 
   getFileUrl(filename: string): string {
-    return `http://localhost:8080/api/upload/files/${filename}`;
+    return this.jobService.getFileUrl(filename);
   }
 
   getDownloadUrl(filename: string): string {
-    return `http://localhost:8080/api/upload/files/${filename}?download=true`;
+    return this.jobService.getDownloadUrl(filename);
   }
 
   selectedPhotoForPreview: string | null = null;

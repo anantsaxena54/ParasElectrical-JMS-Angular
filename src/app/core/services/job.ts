@@ -9,6 +9,14 @@ export class Job {
   private baseUrl = 'https://paraselectrical-jms-springboot-production.up.railway.app';
   private apiUrl = `${this.baseUrl}/api/jobs`;
 
+  getFileUrl(filename: string): string {
+    return `${this.baseUrl}/api/upload/files/${filename}`;
+  }
+
+  getDownloadUrl(filename: string): string {
+    return `${this.baseUrl}/api/upload/files/${filename}?download=true`;
+  }
+
   constructor(private http: HttpClient) { }
 
   getAllJobs(): Observable<any[]> {

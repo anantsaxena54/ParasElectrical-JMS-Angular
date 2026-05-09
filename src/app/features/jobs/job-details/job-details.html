@@ -6,9 +6,14 @@
         <h2>{{job.jobId}}</h2>
         <span class="stage-badge large">{{job.currentStage}}</span>
       </div>
-      <button class="btn btn-danger" (click)="deleteJob()" style="width: auto; padding: 0.5rem 1.2rem; font-size: 0.9rem;">
-        Delete Job
-      </button>
+      <div style="display: flex; gap: 1rem;">
+        <a [routerLink]="['/jobs', job.id, 'edit']" class="btn btn-outline" style="width: auto; padding: 0.5rem 1.2rem; font-size: 0.9rem;">
+          Edit Job
+        </a>
+        <button class="btn btn-danger" (click)="deleteJob()" style="width: auto; padding: 0.5rem 1.2rem; font-size: 0.9rem;">
+          Delete Job
+        </button>
+      </div>
     </div>
   </div>
 
@@ -22,8 +27,12 @@
           <span class="value">{{job.jobId}}</span>
         </div>
         <div class="info-item">
-          <span class="label">Date</span>
+          <span class="label">Received Date</span>
           <span class="value">{{job.receivedDate | date:'mediumDate'}}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Workshop Entry</span>
+          <span class="value">{{job.startDate ? (job.startDate | date:'mediumDate') : 'N/A'}}</span>
         </div>
         <div class="info-item">
           <span class="label">Client</span>

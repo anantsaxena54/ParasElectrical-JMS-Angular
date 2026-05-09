@@ -14,6 +14,7 @@ export const routes: Routes = [
   { path: 'technician', component: TechnicianDashboard },
   { path: 'jobs/create', component: JobCreate },
   { path: 'jobs/:id', component: JobDetails },
+  { path: 'jobs/:id/edit', component: JobCreate },
   { path: '**', redirectTo: 'dashboard' }
 ];
 

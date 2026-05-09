@@ -1,7 +1,7 @@
 <div class="job-create-container container">
   <div class="header-section">
     <a routerLink="/dashboard" class="back-link">← Back to Dashboard</a>
-    <h2>Create New Job Intake</h2>
+    <h2>{{ isEditMode ? 'Edit Job' : 'Create New Job Intake' }}</h2>
   </div>
 
   <div class="form-card glass-card">
@@ -67,6 +67,10 @@
             </select>
           </div>
           <div class="form-group">
+            <label>Start Date (Workshop Entry) *</label>
+            <input type="date" formControlName="startDate" class="form-control">
+          </div>
+          <div class="form-group">
             <label>Expected Delivery Date</label>
             <input type="date" formControlName="expectedDeliveryDate" class="form-control">
           </div>
@@ -76,7 +80,7 @@
       <div class="form-actions">
         <button type="button" routerLink="/dashboard" class="btn btn-outline">Cancel</button>
         <button type="submit" class="btn btn-primary" [disabled]="!jobForm.valid || isSubmitting">
-          {{ isSubmitting ? 'Creating...' : 'Create Job' }}
+          {{ isSubmitting ? (isEditMode ? 'Saving...' : 'Creating...') : (isEditMode ? 'Save Changes' : 'Create Job') }}
         </button>
       </div>
       

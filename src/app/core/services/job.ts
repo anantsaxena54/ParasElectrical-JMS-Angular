@@ -23,6 +23,10 @@ export class Job {
     return this.http.post<any>(this.apiUrl, jobData);
   }
 
+  updateJob(id: number, jobData: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, jobData);
+  }
+
   updateStage(id: number, stage: string, notes?: string): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/${id}/stage?newStage=${stage}&notes=${notes || ''}`, {});
   }

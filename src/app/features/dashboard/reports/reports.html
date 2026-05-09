@@ -21,7 +21,8 @@
           <thead>
             <tr>
               <th>Job ID</th>
-              <th>Date</th>
+              <th>Recv Date</th>
+              <th>Workshop Entry</th>
               <th>Client</th>
               <th>Contact Person</th>
               <th>Phone</th>
@@ -39,6 +40,7 @@
             <tr *ngFor="let job of jobs">
               <td class="font-bold text-primary">{{job.jobId}}</td>
               <td>{{job.receivedDate | date:'shortDate'}}</td>
+              <td>{{job.startDate ? (job.startDate | date:'shortDate') : '-'}}</td>
               <td>{{job.clientName}}</td>
               <td>{{job.contactPerson || '-'}}</td>
               <td>{{job.phoneNumber || '-'}}</td>

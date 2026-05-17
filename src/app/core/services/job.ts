@@ -9,12 +9,24 @@ export class Job {
   private baseUrl = 'https://paraselectrical-jms-springboot-production.up.railway.app';
   private apiUrl = `${this.baseUrl}/api/jobs`;
 
-  getFileUrl(filename: string): string {
-    return `${this.baseUrl}/api/upload/files/${filename}`;
+  getFileUrl(filePath: string): string {
+    // New files: filePath is a full Cloudinary HTTPS URL — use directly
+    if (filePath && filePath.startsWith('http')) {
+      return filePath;
+    }
+    // Legacy files: filePath is just a filename — build the old backend serve URL
+    return `${this.baseUrl}/api/upload/files/${filePath}`;
   }
 
-  getDownloadUrl(filename: string): string {
-    return `${this.baseUrl}/api/upload/files/${filename}?download=true`;
+  getDownloadUrl(filePath: string): string {
+    // New files: Cloudinary URL — append fl_attachment for forced download
+    if (filePath && filePath.startsWith('http')) {
+      // Insert fl_attachment transformation for Cloudinary image URLs
+      // For raw files the URL already triggers download in browser
+      return filePath.replace('/upload/', '/upload/fl_attachment/');
+    }
+    // Legacy files
+    return `${this.baseUrl}/api/upload/files/${filePath}?download=true`;
   }
 
   constructor(private http: HttpClient) { }

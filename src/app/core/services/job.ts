@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class Job {
-  private baseUrl = 'https://paraselectrical-jms-springboot-production.up.railway.app';
+  private baseUrl = 'https://paraselectrical-jms-backend-springboot-production.up.railway.app';
   private apiUrl = `${this.baseUrl}/api/jobs`;
 
   getFileUrl(filePath: string): string {
